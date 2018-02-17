@@ -13,8 +13,11 @@ class App extends Component {
 
     this.state = {
       storageValue: 0,
+      transactionHash: '',
       web3: null
     }
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentWillMount() {
@@ -22,11 +25,11 @@ class App extends Component {
     // See utils/getWeb3 for more info.
 
     getWeb3
-    .then(results => {
-      this.setState({
-        web3: results.web3
-      })
-
+      .then(results => {
+        this.setState({
+          web3: results.web3
+        })
+      
       // Instantiate contract once web3 provided.
       this.geRobotsForUser()
     })
@@ -84,21 +87,38 @@ class App extends Component {
     })
   }
 
+  handleChange(event) {
+    this.setState({ transactionHash: event.target.value });
+  }
+
+  handleSubmit(event) {
+    // now we can take this.state.transactionHash and do whatever we want with it 
+    // webs.eth.getTransaction()
+    // if failed, makeRobot()
+    // if not failed, returnError()
+    console.log('Transaction hash: ', this.state.transactionHash);
+    event.preventDefault();
+  }
+
   render() {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-            <a href="#" className="pure-menu-heading pure-menu-link">Truffle Box</a>
+          <a href="#" className="pure-menu-heading pure-menu-link">Truffle Box</a>
         </nav>
 
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>Good to Go!</h1>
-              <p>Your Truffle Box is installed and ready.</p>
-              <h2>Smart Contract Example</h2>
-              <p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>
-              <p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>
+              <h1>Robot</h1>
+              <form onSubmit={this.handleSubmit}>
+                <label>
+                  Transaction Hash:
+                <input type="text" name="name" value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit"
+                  value="Submit" />
+              </form>
               <p>The stored value is: {this.state.storageValue}</p>
             </div>
           </div>
