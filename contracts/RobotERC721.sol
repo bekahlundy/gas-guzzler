@@ -9,7 +9,15 @@ contract RobotERC721 is ERC721Token, Ownable {
 
   uint256 constant public PRICE = .001 ether;
 
+  struct GasGuzzler {
+    string txHash;
+    uint256 size;
+    address owner;
+  }
+
+  GasGuzzler[] gasGuzzlers;
   mapping(uint256 => uint256) tokenToPriceMap;
+  mapping(string => bool) createdForHash;
 
   function RobotERC721() public {
 
@@ -23,15 +31,42 @@ contract RobotERC721 is ERC721Token, Ownable {
     return SYMBOL;
   }
 
-  function claimRobot(uint256 robotId) public payable {
+  function claimRobot(string txHash, uint256 size) public payable {
     require(msg.value >= PRICE);
+    require(!createdForHash[txHash]);
+    uint256 robotId = addGuzzler(txHash, size, msg.sender);
     _mint(msg.sender, robotId);
+    createdForHash[txHash] = true;
     tokenToPriceMap[robotId] = PRICE;
 
     if (msg.value > PRICE) {
       uint256 priceExcess = msg.value - PRICE;
       msg.sender.transfer(priceExcess);
     }
+  }
+
+  function addGuzzler(string _txHash, uint256 _size, address _owner) internal returns (uint256) {
+    gasGuzzlers.length++;
+    gasGuzzlers[gasGuzzlers.length-1].txHash = _txHash;
+    gasGuzzlers[gasGuzzlers.length-1].size = _size;
+    gasGuzzlers[gasGuzzlers.length-1].owner = _owner;
+    return gasGuzzlers.length - 1;
+  }
+
+  function getGuzzlersCount() public view returns(uint256) {
+    return gasGuzzlers.length;
+  }
+
+  function getGuzzlerTxHash(uint256 robotId) public view returns (string) {
+    return gasGuzzlers[robotId].txHash;
+  }
+
+  function getGuzzlerSize(uint256 robotId) public view returns (uint256) {
+    return gasGuzzlers[robotId].size;
+  }
+
+  function getGuzzlerOwner(uint256 robotId) public view returns (address) {
+    return gasGuzzlers[robotId].owner;
   }
 
   function transferRobot(uint256 robotId) public payable onlyMintedTokens(robotId) {
