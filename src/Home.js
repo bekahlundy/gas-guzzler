@@ -173,6 +173,7 @@ class Home extends Component {
                                         key={robot.id}
                                         size={robot.size}
                                         title={robot.title}
+                                        renderButton={true}
                                         handleTileClick={() => this.handleTileClick(robot)}
                                     />
                                 )
