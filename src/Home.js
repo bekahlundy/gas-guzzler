@@ -47,32 +47,31 @@ class Home extends Component {
             })
     }
 
-    getRobotsForUser() {
-        const contract = require('truffle-contract')
-        const robotContract = contract(RobotContract)
-        robotContract.setProvider(this.state.web3.currentProvider)
-
-        // Declaring this for later so we can chain functions on robotContract.
-        var robotContractInstance
-
-        // Get accounts.
-        this.state.web3.eth.getAccounts((error, accounts) => {
-            robotContract.deployed().then((instance) => {
-                robotContractInstance = instance
-                var account = accounts[0];
-                return robotContractInstance.tokensOf(account)
-            }).then((result) => {
-                result.forEach((robot) => {
-                    // Render the robots
-                    console.log('Robot', robot)
-                })
-            })
-        })
-    }
-
     handleChange(event) {
         this.setState({ transactionHash: event.target.value });
     }
+
+    claimRobot(robot) {
+        const contract = require('truffle-contract')
+        const robotContract = contract(RobotContract)
+        robotContract.setProvider(this.state.web3.currentProvider)
+        var robotContractInstance
+    
+        this.state.web3.eth.getAccounts((error, accounts) => {
+          robotContract.deployed().then((instance) => {
+            robotContractInstance = instance
+            var account = accounts[0];
+            return robotContractInstance.claimRobot(robot.id, 100, { from: account, value: 1000000000000000 });
+          }).then((result) => {
+            console.log('Robot result (ca function)', result)
+          })
+        })
+      }
+
+      handleTileClick(event) {
+        this.claimRobot(event);
+        console.log('click', event);
+      }
 
     handleSubmit(event) {
         // now we can take this.state.transactionHash and do whatever we want with it 

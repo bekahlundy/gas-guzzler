@@ -15,13 +15,8 @@ class MyBots extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fakeData: [
-                { bg: 'bg1', color: 'blue', id: 123456, title: 'test1', size: '100x100' },
-                { bg: 'bg2', color: 'pink', id: 223456, title: 'test2', size: '200x200' },
-                { bg: 'bg3', color: 'green', id: 323456, title: 'test3', size: '300x300' }
-              ]
+            fakeData: []
         }
-        this.handleTileClick = this.handleTileClick.bind(this);
     }
 
     componentWillMount() {
@@ -59,7 +54,13 @@ class MyBots extends Component {
           }).then((result) => {
             result.forEach((robot) => {
               // Render the robots
-              console.log('Robot', robot)
+              var robotIndex = parseInt(robot.toString());
+              console.log(robotIndex);
+              return robotContractInstance.getGuzzlerTxHash(robotIndex).then((result) => {
+                console.log(result.toString());
+                this.state.fakeData.push({id: result.toString()});
+                this.forceUpdate();
+              });
             })
           })
         })

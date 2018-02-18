@@ -4,7 +4,7 @@ const Tile = ({bg, claim, color, handleTileClick, id, title}) => {
     return (
       <div className="tile">
           <h1>{title}</h1>
-          <img src={"https://robohash.org/" + id + "?format=jpg&size=250x250&bgset=" + bg + "&color=" + color} alt='robot'></img>
+          <img src={"https://robohash.org/" + id} alt='robot'></img>
            <button onClick={handleTileClick}>Claim</button>
       </div>
     )
