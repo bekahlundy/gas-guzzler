@@ -1,6 +1,6 @@
-# React Truffle Box
+# Gas Guzzlers
 
-This box comes with everything you need to start using smart contracts from a react app. This is as barebones as it gets, so nothing stands in your way.
+This is a truffle app, so the installation instructions follow.
 
 ## Installation
 
