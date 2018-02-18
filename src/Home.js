@@ -97,10 +97,10 @@ class Home extends Component {
                 this.setState({ transactionValid: 'This transaction is not valid' });
             } else {
                 if (txVerbose.status === 0 || txVerbose.status === "0x00") {
-                    this.setState({ transactionValid: 'This transaction is valid and failed' });
+                    this.setState({ transactionValid: 'This transaction is valid and failed, have a robot!' });
                     this.generateRoboHash(txVerbose);
                 } else {
-                    this.setState({ transactionValid: 'This transaction is valid and a success' });
+                    this.setState({ transactionValid: 'This transaction is valid and a success - no robot for you.' });
                 }
             }
             this.setState({ submitted: true });
@@ -181,6 +181,7 @@ class Home extends Component {
                                 <input className='btn-submit' type="submit"
                                     value="Submit" />
                             </form>
+                            <p>{this.state.transactionValid}</p>
                         </div>
                         <div className='tile-container'>
                             {this.state.robotData.map(robot => {
@@ -193,6 +194,7 @@ class Home extends Component {
                                         key={robot.id}
                                         size="300x300"
                                         title={robot.title}
+                                        renderButton={true}
                                         handleTileClick={() => this.handleTileClick(robot)}
                                     />
                                 )
