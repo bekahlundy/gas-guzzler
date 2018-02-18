@@ -90,8 +90,6 @@ class App extends Component {
     this.setState({ transactionHash: event.target.value });
   }
 
-
-
   handleSubmit(event) {
     // now we can take this.state.transactionHash and do whatever we want with it 
     // webs.eth.getTransaction()
@@ -111,14 +109,42 @@ class App extends Component {
       if (!txVerbose) {
         this.setState({transactionValid: 'This transaction is not valid'});
       } else {
-        if (txVerbose.status === 0) {
+        if (txVerbose.status === 0 || txVerbose.status === "0x00") {
           this.setState({transactionValid: 'This transaction is valid and failed'});
+          this.generateRoboHash(txVerbose);
         } else {
           this.setState({transactionValid: 'This transaction is valid and a success'});
         }
       }
     });
     
+  }
+
+  generateRoboHash(tx) {
+    var background = 'bg3';
+    var roboColor = 'yellow';
+    if (tx.blockNumber % 2 == 0) {
+      background = 'bg2';
+    } else {
+      background = 'bg1';
+    }
+
+    if (tx.gasUsed >= 6721975) {
+      roboColor = 'red';
+    } else {
+      roboColor = 'green';
+    }
+
+    this.state.fakeData = [];
+    var data = { bg: background, color: roboColor, id: tx.transactionHash, title: 'Your Robit', size: '250x250' };
+    this.state.fakeData.push(data);
+    
+    console.log(this.state.fakeData);
+    this.forceUpdate();
+  }
+
+  isEven(n) {
+    return n % 2 == 0;
   }
 
   handleTileClick(event) {
