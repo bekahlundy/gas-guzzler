@@ -17,6 +17,8 @@ class Home extends Component {
         super(props)
 
         this.state = {
+            loading: false,
+            name: '',
             robotData: [],
             storageValue: 0,
             submitted: false,
@@ -56,43 +58,31 @@ class Home extends Component {
         const robotContract = contract(RobotContract)
         robotContract.setProvider(this.state.web3.currentProvider)
         var robotContractInstance
-    
-        this.state.web3.eth.getAccounts((error, accounts) => {
-          robotContract.deployed().then((instance) => {
-            robotContractInstance = instance
-            var account = accounts[0];
-            return robotContractInstance.claimRobot(robot.id, 100, { from: account, value: 1000000000000000 });
-          }).then((result) => {
-            console.log('Robot result (ca function)', result)
-          })
-        })
-      }
 
-      handleTileClick(event) {
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            robotContract.deployed().then((instance) => {
+                robotContractInstance = instance
+                var account = accounts[0];
+                return robotContractInstance.claimRobot(robot.id, 100, { from: account, value: 1000000000000000 });
+            }).then((result) => {
+                console.log('Robot result (ca function)', result)
+            })
+        })
+    }
+
+    handleTileClick(event) {
         this.claimRobot(event);
         console.log('click', event);
-      }
+    }
 
     handleSubmit(event) {
+        this.setState({ loading: true })
+        // this.startLoader();
         // now we can take this.state.transactionHash and do whatever we want with it 
         // webs.eth.getTransaction()
         // if failed, makeRobot()
         // if not failed, returnError()
         console.log('Transaction hash: ', this.state.transactionHash);
-
-        document.getElementsByClassName('toggle-button')[0].onclick = function() {
-            if(this.innerHTML === 'Submit') 
-            { 
-              this.innerHTML = 'Pause';
-              boxOne.classList.add('horizTranslate');
-            } else {
-              this.innerHTML = 'Submit';
-              var computedStyle = window.getComputedStyle(boxOne),
-                  marginLeft = computedStyle.getPropertyValue('margin-left');
-              boxOne.style.marginLeft = marginLeft;
-              boxOne.classList.remove('horizTranslate');    
-            }  
-          }
 
         event.preventDefault();
 
@@ -114,11 +104,22 @@ class Home extends Component {
                 }
             }
             this.setState({ submitted: true });
+            setTimeout(() => { this.setState({ loading: false }); }, 2000);
+
         });
 
     }
 
+    getName() {
+        var firstNames = ['space', 'bubbles', 'cutie', 'sad', 'bubby', 'strong', 'metal', 'tin', 'beep', 'bop'];
+        var lastNames = ['dummy', 'prince', 'beep', 'bop', 'battery', 'nail', 'hammer', 'buddy', 'oilcan', 'pal', 'hunny'];
+        var first = firstNames[Math.floor(Math.random() * firstNames.length)];
+        var last = lastNames[Math.floor(Math.random() * lastNames.length)];
+        this.setState({ name: first + ' ' + last });
+    }
+
     generateRoboHash(tx) {
+        this.getName();
         var background = 'bg3';
         var roboColor = 'yellow';
         if (tx.blockNumber % 2 == 0) {
@@ -134,7 +135,7 @@ class Home extends Component {
         }
 
         this.state.robotData = [];
-        var data = { bg: background, color: roboColor, id: tx.transactionHash, title: 'Your Robit', size: '250x250' };
+        var data = { bg: background, color: roboColor, id: tx.transactionHash, title: this.state.name, size: '250x250' };
         this.state.robotData.push(data);
 
         console.log(this.state.robotData);
@@ -147,20 +148,39 @@ class Home extends Component {
     }
 
     render() {
-        if (this.state.submitted) {
+        if (this.state.submitted && this.state.loading) {
             return (
                 <div className="pure-g">
                     <div className="pure-u-1-1">
-                    <div className="header-slide">
-                        <h1 className="page-title">Robot</h1>
-                        <form onSubmit={this.handleSubmit}>
-                            <label>
-                                Transaction Hash:
-                    <input type="text" name="name" value={this.state.value} onChange={this.handleChange} />
-                            </label>
-                            <input type="submit"
-                                value="Submit" />
-                        </form>
+                        <div className="header-slide">
+                            <h1 className="page-title">Robot</h1>
+                            <form onSubmit={this.handleSubmit}>
+                                <input className='input-field' type="text" name="name" placeholder="Enter failed transaction hash here..." value={this.state.value} onChange={this.handleChange} />
+                                <input className='btn-submit' type="submit"
+                                    value="Submit" />
+                            </form>
+                            <span className="loading style-2"></span>
+
+                            <span className="loading style-1"></span>
+
+                            <span className="loading style-2"></span>
+                        </div>
+
+                    </div>
+                </div>
+            )
+        }
+        else if (this.state.submitted && !this.state.loading) {
+            return (
+                <div className="pure-g">
+                    <div className="pure-u-1-1">
+                        <div className="header-slide">
+                            <h1 className="page-title">Robot</h1>
+                            <form onSubmit={this.handleSubmit}>
+                                <input className='input-field' type="text" name="name" placeholder="Enter failed transaction hash here..." value={this.state.value} onChange={this.handleChange} />
+                                <input className='btn-submit' type="submit"
+                                    value="Submit" />
+                            </form>
                         </div>
                         <div className='tile-container'>
                             {this.state.robotData.map(robot => {
@@ -171,14 +191,13 @@ class Home extends Component {
                                         claim={true}
                                         id={robot.id}
                                         key={robot.id}
-                                        size={robot.size}
+                                        size="300x300"
                                         title={robot.title}
                                         handleTileClick={() => this.handleTileClick(robot)}
                                     />
                                 )
                             })}
                         </div>
-                        <p>The stored value is: {this.state.storageValue}</p>
                     </div>
                 </div>
             )
@@ -187,13 +206,13 @@ class Home extends Component {
             return (
                 <div className="pure-g">
                     <div className="pure-u-1-1">
-                    <div className="header-slide">
-                        <h1 className="page-title">Robot</h1>
-                        <form onSubmit={this.handleSubmit}>
-                            <input className='input-field' type="text" name="name" placeholder="Enter transaction hash here..." value={this.state.value} onChange={this.handleChange} />
-                            <input className='btn-submit toggle-button' type="submit"
-                                value="Submit" />
-                        </form>
+                        <div className="header-slide">
+                            <h1 className="page-title">Robot</h1>
+                            <form onSubmit={this.handleSubmit}>
+                                <input className='input-field' type="text" name="name" placeholder="Enter failed transaction hash here..." value={this.state.value} onChange={this.handleChange} />
+                                <input className='btn-submit' type="submit"
+                                    value="Submit" />
+                            </form>
                         </div>
 
                     </div>

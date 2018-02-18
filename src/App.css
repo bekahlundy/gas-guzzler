@@ -35,12 +35,14 @@ code {
   color: rgb(57, 57, 57);
   font-size: 18px;
   justify-content: space-between;
-  padding: 20px 20px;
+  padding: 0px 10px 10px 10px;
+  margin: 10px 20px;
   text-decoration: none;
+  transition: .2s;
 }
 
 .space-between {
-  width: 80%;
+  width: 90%;
 }
 
 
@@ -48,6 +50,10 @@ code {
 .navbar a:focus,
 .navbar a:hover {
   color: #1b1b1b;
+  text-decoration: none;
+  border-bottom: 4px solid black;
+  border-bottom-right-radius: 3%;
+  border-bottom-left-radius: 3%;
 }
 
 .navbar .pure-menu-heading {
@@ -104,7 +110,7 @@ body {
   font-size: 16px;
 }
 
-.btn-submit {
+.btn-submit, .btn-claim {
   background-color: #fff;
   border-radius: 5px;
   color: rgb(57, 57, 57);
@@ -114,8 +120,14 @@ body {
   padding: 8px;
 }
 
+.btn-claim {
+  width: 80%
+}
+
 .btn-submit:hover {
-  background-color: rgb(211, 227, 255);
+  border: 1px solid #0b0b0b;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 2, .2);
+  transition: .5s;
 }
 
 .header-slide.horizTranslate {
@@ -126,3 +138,50 @@ body {
   transition: 3s;
   margin-bottom: 50% !important;
 }
+
+
+
+
+
+
+.loading {
+  display: inline-block;
+  margin: 5em;
+  border-width: 30px;
+  border-radius: 50%;
+  -webkit-animation: spin 1s linear infinite;
+     -moz-animation: spin 1s linear infinite;
+       -o-animation: spin 1s linear infinite;
+          animation: spin 1s linear infinite;
+  }
+
+.style-1 {
+  border-style: solid;
+  border-color: #444 transparent;
+  }
+
+.style-2 {
+  border-style: double;
+  border-color: #444 transparent;
+  }
+
+.style-3 {
+  border-style: double;
+  border-color: #444 #fff #fff;
+  }
+
+@-webkit-keyframes spin {
+  100% { -webkit-transform: rotate(359deg); }
+  }
+
+@-moz-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
+
+@-o-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
+
+@keyframes spin {
+  100% {  transform: rotate(359deg); }
+  }
