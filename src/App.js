@@ -19,6 +19,7 @@ class App extends Component {
         { bg: 'bg3', color: 'green', id: 323456, title: 'test3', size: '300x300' }
       ],
       storageValue: 0,
+      transactionValid: '',
       web3: null
     }
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -156,6 +157,7 @@ class App extends Component {
                   )
                 })}
               </div>
+              <p>{this.state.transactionValid}</p>
             </div>
           </div>
         </main>
