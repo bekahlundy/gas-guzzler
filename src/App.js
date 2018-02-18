@@ -89,14 +89,35 @@ class App extends Component {
     this.setState({ transactionHash: event.target.value });
   }
 
+
+
   handleSubmit(event) {
     // now we can take this.state.transactionHash and do whatever we want with it 
     // webs.eth.getTransaction()
     // if failed, makeRobot()
     // if not failed, returnError()
     console.log('Transaction hash: ', this.state.transactionHash);
-    this.mintRobot();
+
     event.preventDefault();
+
+    var txVerbose = null;
+    
+    this.state.web3.eth.getTransactionReceipt(this.state.transactionHash).then((result) => {
+      console.log(result);
+      
+      txVerbose = result;
+
+      if (!txVerbose) {
+        this.setState({transactionValid: 'This transaction is not valid'});
+      } else {
+        if (txVerbose.status === 0) {
+          this.setState({transactionValid: 'This transaction is valid and failed'});
+        } else {
+          this.setState({transactionValid: 'This transaction is valid and a success'});
+        }
+      }
+    });
+    
   }
 
   handleTileClick(event) {
