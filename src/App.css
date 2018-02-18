@@ -66,3 +66,14 @@ code {
   height: 16px;
   margin-right: 10px;
 }
+
+.tile-container {
+  display: flex;
+  height: 100vh;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tile {
+  width: 300px;
+}

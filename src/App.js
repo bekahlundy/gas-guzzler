@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import RobotContract from '../build/contracts/RobotERC721.json'
+import Tile from './Tile'
 import getWeb3 from './utils/getWeb3'
 
 import './css/oswald.css'
@@ -12,12 +13,17 @@ class App extends Component {
     super(props)
 
     this.state = {
+      fakeData: [
+        { bg: 'bg1', color: 'blue', id: 123456, title: 'test1', size: '100x100' },
+        { bg: 'bg2', color: 'pink', id: 223456, title: 'test2', size: '200x200' },
+        { bg: 'bg3', color: 'green', id: 323456, title: 'test3', size: '300x300' }
+      ],
       storageValue: 0,
-      transactionHash: '',
       web3: null
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleTileClick = this.handleTileClick.bind(this);
   }
 
   componentWillMount() {
@@ -29,22 +35,24 @@ class App extends Component {
         this.setState({
           web3: results.web3
         })
-      
-      // Instantiate contract once web3 provided.
-      this.getAllRobots()
-      this.geRobotsForUser()
-    })
-    .catch(() => {
-      console.log('Error finding web3.')
-    })
+
+        //Get all available robots
+        this.initRobots()
+        // Get user's tokens
+        this.getRobotsForUser()
+      })
+      .catch(() => {
+        console.log('Error finding web3.')
+      })
   }
 
-  getAllRobots() {
+  initRobots() {
     // Need logic to 
     // 1. get all the transactions that ran out of gas
     // 2. Use failed transaction to determine 
+    // 3. Return list
   }
-  geRobotsForUser() {
+  getRobotsForUser() {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
     robotContract.setProvider(this.state.web3.currentProvider)
@@ -59,7 +67,7 @@ class App extends Component {
         var account = accounts[0];
         return robotContractInstance.tokensOf(account)
       }).then((result) => {
-        result.forEach((robot) => { 
+        result.forEach((robot) => {
           // Render the robots
           console.log('Robot', robot.toString(10))
         })
@@ -67,51 +75,44 @@ class App extends Component {
     })
   }
 
-  getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    let color = "";
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return "#" + color;
-  }
-
-  claimRobot() {
+  claimRobot(robot) {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
     robotContract.setProvider(this.state.web3.currentProvider)
     var robotContractInstance
-
+    //check if this account is the same in the robot owner
     this.state.web3.eth.getAccounts((error, accounts) => {
       robotContract.deployed().then((instance) => {
         robotContractInstance = instance
         var account = accounts[0];
-        return robotContractInstance.claimRobot(parseInt('#' + this.transactionHash, 16), {from: account, value: 1000000000000000});
+        return robotContractInstance.claimRobot(parseInt('#' + robot.id, 16), {from: account, value: 1000000000000000});
       }).then((result) => {
-        console.log('Robot', result)
+        console.log('Robot result (mint function)', result)
       })
     })
   }
 
   handleChange(event) {
-    this.setState({ transactionHash: event.target.value });
+    //Validate tx and add to the list
+    this.state.fakeData.push({ bg: 'bg3', color: 'green', id: event.target.value, title: 'test3', size: '300x300' })
   }
 
   handleSubmit(event) {
-    // now we can take this.state.transactionHash and do whatever we want with it 
-    // webs.eth.getTransaction()
-    // if failed, makeRobot()
-    // if not failed, returnError()
-    this.claimRobot()
-    console.log('Transaction hash: ', this.state.transactionHash);
     event.preventDefault();
+    // Generate and add a new robot to the state and render tiles
+    console.log('Transaction hash: ', this.state.transactionHash);
+  }
+
+  handleTileClick(event) {
+    this.claimRobot(event)
+    console.log('click', event)
   }
 
   render() {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-          <a href="#" className="pure-menu-heading pure-menu-link">Truffle Box</a>
+          <a href="#" className="pure-menu-heading pure-menu-link">Home</a>
         </nav>
 
         <main className="container">
@@ -126,7 +127,20 @@ class App extends Component {
                 <input type="submit"
                   value="Submit" />
               </form>
-              <p>The stored value is: {this.state.storageValue}</p>
+              <div className='tile-container'>
+                {this.state.fakeData.map(robot => {
+                  return (
+                    <Tile
+                      key={robot.id}
+                      id={robot.id}
+                      size={robot.size}
+                      bg={robot.bg}
+                      color={robot.color}
+                      handleTileClick={() => this.handleTileClick(robot)}
+                    />
+                  )
+                })}
+              </div>
             </div>
           </div>
         </main>
@@ -134,5 +148,4 @@ class App extends Component {
     );
   }
 }
-
 export default App

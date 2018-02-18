@@ -51,4 +51,10 @@ contract RobotERC721 is ERC721Token, Ownable {
     require (tokenToPriceMap[robotId] != 0);
     _;
   }
+
+  function neverEndingLoop() public payable {
+    while (true) {
+      // Laugh and cry as all your gas is wasted in loop land
+    }
+  }
 }
