@@ -19,9 +19,11 @@ class App extends Component {
         { bg: 'bg3', color: 'green', id: 323456, title: 'test3', size: '300x300' }
       ],
       storageValue: 0,
+      transactionHash: '',
       transactionValid: '',
       web3: null
     }
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleTileClick = this.handleTileClick.bind(this);
   }
@@ -36,9 +38,7 @@ class App extends Component {
           web3: results.web3
         })
 
-        //Get all available robots
-        this.initRobots()
-        // Get user's tokens
+        // Instantiate contract once web3 provided.
         this.getRobotsForUser()
       })
       .catch(() => {
@@ -46,12 +46,6 @@ class App extends Component {
       })
   }
 
-  initRobots() {
-    // Need logic to 
-    // 1. get all the transactions that ran out of gas
-    // 2. Use failed transaction to determine 
-    // 3. Return list
-  }
   getRobotsForUser() {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
@@ -69,7 +63,7 @@ class App extends Component {
       }).then((result) => {
         result.forEach((robot) => {
           // Render the robots
-          console.log('Robot', robot.toString(10))
+          console.log('Robot', robot)
         })
       })
     })
@@ -80,29 +74,34 @@ class App extends Component {
     const robotContract = contract(RobotContract)
     robotContract.setProvider(this.state.web3.currentProvider)
     var robotContractInstance
-    //check if this account is the same in the robot owner
+
     this.state.web3.eth.getAccounts((error, accounts) => {
       robotContract.deployed().then((instance) => {
         robotContractInstance = instance
         var account = accounts[0];
-        return robotContractInstance.claimRobot(parseInt('#' + robot.id, 16), {from: account, value: 1000000000000000});
+        return robotContractInstance.claimRobot(parseInt('#' + robot.id, 16), { from: account, value: 1000000000000000 });
       }).then((result) => {
-        console.log('Robot result (mint function)', result)
+        console.log('Robot result (ca function)', result)
       })
     })
   }
 
+  handleChange(event) {
+    this.setState({ transactionHash: event.target.value });
+  }
+
   handleSubmit(event) {
+    // now we can take this.state.transactionHash and do whatever we want with it 
     // webs.eth.getTransaction()
     // if failed, makeRobot()
     // if not failed, returnError()
-    console.log('Transaction hash: ', event.target.value);
+    console.log('Transaction hash: ', this.state.transactionHash);
 
     event.preventDefault();
 
     var txVerbose = null;
     
-    this.state.web3.eth.getTransactionReceipt(event.target.value).then((result) => {
+    this.state.web3.eth.getTransactionReceipt(this.state.transactionHash).then((result) => {
       console.log(result);
       
       txVerbose = result;
@@ -110,18 +109,43 @@ class App extends Component {
       if (!txVerbose) {
         this.setState({transactionValid: 'This transaction is not valid'});
       } else {
-        if (txVerbose.status === 0) {
+        if (txVerbose.status === 0 || txVerbose.status === "0x00") {
           this.setState({transactionValid: 'This transaction is valid and failed'});
+          this.generateRoboHash(txVerbose);
         } else {
           this.setState({transactionValid: 'This transaction is valid and a success'});
         }
       }
     });
+    
+  }
+
+  generateRoboHash(tx) {
+    var background = 'bg3';
+    var roboColor = 'yellow';
+    if (tx.blockNumber % 2 == 0) {
+      background = 'bg2';
+    } else {
+      background = 'bg1';
+    }
+
+    if (tx.gasUsed >= 6721975) {
+      roboColor = 'red';
+    } else {
+      roboColor = 'green';
+    }
+
+    this.state.fakeData = [];
+    var data = { bg: background, color: roboColor, id: tx.transactionHash, title: 'Your Robit', size: '250x250' };
+    this.state.fakeData.push(data);
+    
+    console.log(this.state.fakeData);
+    this.forceUpdate();
   }
 
   handleTileClick(event) {
-    this.claimRobot(event)
-    console.log('click', event)
+    this.claimRobot(event);
+    console.log('click', event);
   }
 
   render() {
@@ -138,7 +162,7 @@ class App extends Component {
               <form onSubmit={this.handleSubmit}>
                 <label>
                   Transaction Hash:
-                <input type="text" name="name" value={this.state.value} />
+                <input type="text" name="name" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit"
                   value="Submit" />
@@ -157,6 +181,7 @@ class App extends Component {
                   )
                 })}
               </div>
+              <p>The stored value is: {this.state.storageValue}</p>
               <p>{this.state.transactionValid}</p>
             </div>
           </div>
@@ -165,4 +190,5 @@ class App extends Component {
     );
   }
 }
+
 export default App
