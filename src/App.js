@@ -79,7 +79,8 @@ class App extends Component {
       robotContract.deployed().then((instance) => {
         robotContractInstance = instance
         var account = accounts[0];
-        return robotContractInstance.claimRobot(parseInt('#' + robot.id, 16), { from: account, value: 1000000000000000 });
+        console.log(robot);
+        return robotContractInstance.claimRobot(robot.id, 100, { from: account, value: 1000000000000000 });
       }).then((result) => {
         console.log('Robot result (ca function)', result)
       })
