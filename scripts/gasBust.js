@@ -5,13 +5,17 @@ module.exports = function(done) {
     var account_zero = web3.eth.accounts[0]; // an address
     console.log("Executing transaction from account " + account_zero + "...");
     RobotERC721.deployed().then(function(instance) {
-        return instance.neverEndingLoop();
-    }).then(function(balance) {
-        console.log('Success - this shouldn\'t have happened because this transaction is designed to fail...');
+        return instance.neverEndingLoop().then(function(result) {
+            console.log('Success - this shouldn\'t have happened because this transaction is designed to fail...');
+            done();
+        }).catch(function(vmException) {
+            console.log(vmException.message);
+            done();
+        });
+    }).then(function(result) {
         done();
-    }).catch(function(e) {
-        //console.log(e);
-        console.log('Failure - txId: ' + e.tx);
+    }).catch(function(transactionException) {
+        console.log(transactionException.message);
         done();
     });
 }

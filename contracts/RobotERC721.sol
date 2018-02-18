@@ -23,10 +23,10 @@ contract RobotERC721 is ERC721Token, Ownable {
     return SYMBOL;
   }
 
-  function mint(uint256 colorId) public payable {
+  function claimRobot(uint256 robotId) public payable {
     require(msg.value >= PRICE);
-    _mint(msg.sender, colorId);
-    tokenToPriceMap[colorId] = PRICE;
+    _mint(msg.sender, robotId);
+    tokenToPriceMap[robotId] = PRICE;
 
     if (msg.value > PRICE) {
       uint256 priceExcess = msg.value - PRICE;
@@ -34,21 +34,21 @@ contract RobotERC721 is ERC721Token, Ownable {
     }
   }
 
-  function claim(uint256 colorId) public payable onlyMintedTokens(colorId) {
-    uint256 askingPrice = getClaimingPrice(colorId);
+  function transferRobot(uint256 robotId) public payable onlyMintedTokens(robotId) {
+    uint256 askingPrice = getClaimingPrice(robotId);
     require(msg.value >= askingPrice);
-    clearApprovalAndTransfer(ownerOf(colorId), msg.sender, colorId);
-    tokenToPriceMap[colorId] = askingPrice;
+    clearApprovalAndTransfer(ownerOf(robotId), msg.sender, robotId);
+    tokenToPriceMap[robotId] = askingPrice;
   }
 
-  function getClaimingPrice(uint256 colorId) public view onlyMintedTokens(colorId) returns(uint256) {
-    uint256 currentPrice = tokenToPriceMap[colorId];
+  function getClaimingPrice(uint256 robotId) public view onlyMintedTokens(robotId) returns(uint256) {
+    uint256 currentPrice = tokenToPriceMap[robotId];
     uint256 askingPrice = (currentPrice * 50) / 100;
     return askingPrice;
   }
 
-  modifier onlyMintedTokens(uint256 colorId) {
-    require (tokenToPriceMap[colorId] != 0);
+  modifier onlyMintedTokens(uint256 robotId) {
+    require (tokenToPriceMap[robotId] != 0);
     _;
   }
 
