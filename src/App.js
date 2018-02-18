@@ -31,6 +31,7 @@ class App extends Component {
         })
       
       // Instantiate contract once web3 provided.
+      this.getAllRobots()
       this.geRobotsForUser()
     })
     .catch(() => {
@@ -38,6 +39,11 @@ class App extends Component {
     })
   }
 
+  getAllRobots() {
+    // Need logic to 
+    // 1. get all the transactions that ran out of gas
+    // 2. Use failed transaction to determine 
+  }
   geRobotsForUser() {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
@@ -55,7 +61,7 @@ class App extends Component {
       }).then((result) => {
         result.forEach((robot) => { 
           // Render the robots
-          console.log('Robot', robot)
+          console.log('Robot', robot.toString(10))
         })
       })
     })
@@ -70,7 +76,7 @@ class App extends Component {
     return "#" + color;
   }
 
-  mintRobot() {
+  claimRobot() {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
     robotContract.setProvider(this.state.web3.currentProvider)
@@ -80,7 +86,7 @@ class App extends Component {
       robotContract.deployed().then((instance) => {
         robotContractInstance = instance
         var account = accounts[0];
-        return robotContractInstance.mint(parseInt(this.getRandomColor(), 16), {from: account, value: this.state.web3.BigNumber(1000000000000000)});
+        return robotContractInstance.claimRobot(parseInt('#' + this.transactionHash, 16), {from: account, value: 1000000000000000});
       }).then((result) => {
         console.log('Robot', result)
       })
@@ -96,6 +102,7 @@ class App extends Component {
     // webs.eth.getTransaction()
     // if failed, makeRobot()
     // if not failed, returnError()
+    this.claimRobot()
     console.log('Transaction hash: ', this.state.transactionHash);
     event.preventDefault();
   }
