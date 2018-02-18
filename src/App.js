@@ -101,15 +101,23 @@ class App extends Component {
 
     event.preventDefault();
 
-    var txVerbose = this.state.web3.eth.getTransaction(this.state.transactionHash);
+    var txVerbose = null;
+    
+    this.state.web3.eth.getTransactionReceipt(this.state.transactionHash).then((result) => {
+      console.log(result);
+      
+      txVerbose = result;
 
-    console.log(txVerbose);
-
-    if (!txVerbose) {
-      this.setState({transactionValid: 'This transaction is not valid'});
-    } else {
-
-    }
+      if (!txVerbose) {
+        this.setState({transactionValid: 'This transaction is not valid'});
+      } else {
+        if (txVerbose.status === 0) {
+          this.setState({transactionValid: 'This transaction is valid and failed'});
+        } else {
+          this.setState({transactionValid: 'This transaction is valid and a success'});
+        }
+      }
+    });
     
   }
 
