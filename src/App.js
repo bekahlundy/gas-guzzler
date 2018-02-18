@@ -20,6 +20,7 @@ class App extends Component {
       ],
       storageValue: 0,
       transactionHash: '',
+      transactionValid: '',
       web3: null
     }
     this.handleChange = this.handleChange.bind(this);
@@ -158,6 +159,7 @@ class App extends Component {
                 })}
               </div>
               <p>The stored value is: {this.state.storageValue}</p>
+              <p>{this.state.transactionValid}</p>
             </div>
           </div>
         </main>
