@@ -6,7 +6,7 @@ const Tile = ({bg, claim, color, handleTileClick, id, title, renderButton}) => {
       <div className="tile">
           <h1>{title}</h1>
           <img src={"https://robohash.org/" + id} alt='robot'></img>
-           <button onClick={handleTileClick}>Claim</button>
+           <button className="btn-claim" onClick={handleTileClick}>Claim {title}</button>
       </div>
     );
   } else {
