@@ -14,7 +14,8 @@ class App extends Component {
     this.state = {
       storageValue: 0,
       transactionHash: '',
-      web3: null
+      web3: null,
+      transactionValid: ''
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -97,7 +98,19 @@ class App extends Component {
     // if failed, makeRobot()
     // if not failed, returnError()
     console.log('Transaction hash: ', this.state.transactionHash);
+
     event.preventDefault();
+
+    var txVerbose = this.state.web3.eth.getTransaction(this.state.transactionHash);
+
+    console.log(txVerbose);
+
+    if (!txVerbose) {
+      this.setState({transactionValid: 'This transaction is not valid'});
+    } else {
+
+    }
+    
   }
 
   render() {
@@ -120,6 +133,7 @@ class App extends Component {
                   value="Submit" />
               </form>
               <p>The stored value is: {this.state.storageValue}</p>
+              <p>{this.state.transactionValid}</p>
             </div>
           </div>
         </main>
