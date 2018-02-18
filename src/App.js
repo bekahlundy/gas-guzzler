@@ -143,10 +143,6 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  isEven(n) {
-    return n % 2 == 0;
-  }
-
   handleTileClick(event) {
     console.log('click', event)
   }
