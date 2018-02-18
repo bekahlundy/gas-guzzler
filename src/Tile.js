@@ -16,6 +16,7 @@ const Tile = ({bg, claim, color, handleTileClick, id, title, renderButton}) => {
           <img src={"https://robohash.org/" + id} alt='robot'></img>
       </div>
     );
-  } }
+  } 
+}
   
   export default Tile;
