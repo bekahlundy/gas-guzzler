@@ -69,7 +69,7 @@ class App extends Component {
     })
   }
 
-  mintRobot() {
+  claimRobot(robot) {
     const contract = require('truffle-contract')
     const robotContract = contract(RobotContract)
     robotContract.setProvider(this.state.web3.currentProvider)
@@ -79,9 +79,9 @@ class App extends Component {
       robotContract.deployed().then((instance) => {
         robotContractInstance = instance
         var account = accounts[0];
-        return robotContractInstance.mint(parseInt('#' + this.state.transactionHash, 16), { from: account, value: 1000000000000000 });
+        return robotContractInstance.claimRobot(parseInt('#' + robot.id, 16), { from: account, value: 1000000000000000 });
       }).then((result) => {
-        console.log('Robot result (mint function)', result)
+        console.log('Robot result (ca function)', result)
       })
     })
   }
@@ -144,7 +144,8 @@ class App extends Component {
   }
 
   handleTileClick(event) {
-    console.log('click', event)
+    this.claimRobot(event);
+    console.log('click', event);
   }
 
   render() {
