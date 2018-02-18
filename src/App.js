@@ -21,7 +21,6 @@ class App extends Component {
       storageValue: 0,
       web3: null
     }
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleTileClick = this.handleTileClick.bind(this);
   }
@@ -92,15 +91,31 @@ class App extends Component {
     })
   }
 
-  handleChange(event) {
-    //Validate tx and add to the list
-    this.state.fakeData.push({ bg: 'bg3', color: 'green', id: event.target.value, title: 'test3', size: '300x300' })
-  }
-
   handleSubmit(event) {
+    // webs.eth.getTransaction()
+    // if failed, makeRobot()
+    // if not failed, returnError()
+    console.log('Transaction hash: ', event.target.value);
+
     event.preventDefault();
-    // Generate and add a new robot to the state and render tiles
-    console.log('Transaction hash: ', this.state.transactionHash);
+
+    var txVerbose = null;
+    
+    this.state.web3.eth.getTransactionReceipt(event.target.value).then((result) => {
+      console.log(result);
+      
+      txVerbose = result;
+
+      if (!txVerbose) {
+        this.setState({transactionValid: 'This transaction is not valid'});
+      } else {
+        if (txVerbose.status === 0) {
+          this.setState({transactionValid: 'This transaction is valid and failed'});
+        } else {
+          this.setState({transactionValid: 'This transaction is valid and a success'});
+        }
+      }
+    });
   }
 
   handleTileClick(event) {
@@ -122,7 +137,7 @@ class App extends Component {
               <form onSubmit={this.handleSubmit}>
                 <label>
                   Transaction Hash:
-                <input type="text" name="name" value={this.state.value} onChange={this.handleChange} />
+                <input type="text" name="name" value={this.state.value} />
                 </label>
                 <input type="submit"
                   value="Submit" />
