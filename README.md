@@ -1,5 +1,9 @@
 # Gas Guzzlers
 
+## Background
+
+This app was created for the 2018 ETHDenver Hackathon. Our submission details are [here](https://devpost.com/software/gas-guzzler)
+
 This is a truffle app, so the installation instructions follow.
 
 ## Installation
